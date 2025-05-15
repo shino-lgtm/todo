@@ -1,39 +1,45 @@
-// ToDoリスト項目（ここに自由に追加できます）
-const todos = ['雑巾がけ', '英語の勉強', 'ストレッチ', '洗濯', '日記を書く'];
-
+let todos = JSON.parse(localStorage.getItem('todoItems') || '[]');
 const todoList = document.getElementById('todoList');
+const addForm = document.getElementById('addForm');
+const newTodo = document.getElementById('newTodo');
 
-// チェック状態の保存と読み込み
-function loadState() {
-  return JSON.parse(localStorage.getItem('todoState') || '{}');
-}
-
-function saveState(state) {
-  localStorage.setItem('todoState', JSON.stringify(state));
+function saveTodos() {
+  localStorage.setItem('todoItems', JSON.stringify(todos));
 }
 
 function renderList() {
-  const state = loadState();
   todoList.innerHTML = '';
-  todos.forEach((task, index) => {
+  todos.forEach((item, index) => {
     const li = document.createElement('li');
     const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.checked = state[index] || false;
+    checkbox.checked = item.done;
     checkbox.addEventListener('change', () => {
-      state[index] = checkbox.checked;
-      saveState(state);
+      item.done = checkbox.checked;
+      saveTodos();
     });
     label.appendChild(checkbox);
-    label.append(task);
+    label.append(item.text);
     li.appendChild(label);
     todoList.appendChild(li);
   });
 }
 
+addForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const text = newTodo.value.trim();
+  if (text) {
+    todos.push({ text: text, done: false });
+    saveTodos();
+    renderList();
+    newTodo.value = '';
+  }
+});
+
 document.getElementById('resetBtn').addEventListener('click', () => {
-  localStorage.removeItem('todoState');
+  todos = [];
+  saveTodos();
   renderList();
 });
 
