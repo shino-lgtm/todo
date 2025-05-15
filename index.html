@@ -2,21 +2,147 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌸 ToDo</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>かわいいToDoリスト</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Gothic&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Sawarabi Gothic', sans-serif;
+      background-color: #fff0f5;
+      color: #d63384;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #c2185b;
+    }
+
+    #todo-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 0.5rem;
+      border: 2px solid #f8bbd0;
+      border-radius: 8px;
+      background-color: #fff;
+      width: 200px;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #f8bbd0;
+      color: #880e4f;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #f48fb1;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    li {
+      background-color: #ffe4e1;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li.done {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #d81b60;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>🌸 今日のToDo</h1>
-
-  <form id="addForm">
-    <input type="text" id="newTodo" placeholder="やることを追加" required />
+  <h1>🌸 わたしのToDoリスト 🌸</h1>
+  <form id="todo-form">
+    <input type="text" id="todo-input" placeholder="やることを書く" />
     <button type="submit">追加</button>
   </form>
+  <ul id="todo-list"></ul>
 
-  <ul id="todoList"></ul>
-  <button id="resetBtn">すべてリセット</button>
+  <script>
+    const todoForm = document.getElementById("todo-form");
+    const todoInput = document.getElementById("todo-input");
+    const todoList = document.getElementById("todo-list");
 
-  <script src="main.js"></script>
+    // 保存されたToDoを読み込む
+    window.addEventListener("load", () => {
+      const saved = localStorage.getItem("todos");
+      if (saved) {
+        todoList.innerHTML = saved;
+        addEventListeners();
+      }
+    });
+
+    // 新しいToDoを追加
+    todoForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = todoInput.value.trim();
+      if (text === "") return;
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${text}</span>
+        <button class="delete-btn">✖</button>
+      `;
+      todoList.appendChild(li);
+      todoInput.value = "";
+
+      addEventListeners();
+      saveTodos();
+    });
+
+    // イベントを再付与（削除・完了）
+    function addEventListeners() {
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.onclick = function () {
+          this.parentElement.remove();
+          saveTodos();
+        };
+      });
+
+      document.querySelectorAll("#todo-list li span").forEach(span => {
+        span.onclick = function () {
+          this.parentElement.classList.toggle("done");
+          saveTodos();
+        };
+      });
+    }
+
+    // ローカルストレージに保存
+    function saveTodos() {
+      localStorage.setItem("todos", todoList.innerHTML);
+    }
+  </script>
 </body>
 </html>
