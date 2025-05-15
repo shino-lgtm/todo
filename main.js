@@ -1,4 +1,5 @@
 let todos = JSON.parse(localStorage.getItem('todoItems') || '[]');
+
 const todoList = document.getElementById('todoList');
 const addForm = document.getElementById('addForm');
 const newTodo = document.getElementById('newTodo');
@@ -26,11 +27,11 @@ function renderList() {
   });
 }
 
-addForm.addEventListener('submit', e => {
+addForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = newTodo.value.trim();
   if (text) {
-    todos.push({ text: text, done: false });
+    todos.push({ text, done: false });
     saveTodos();
     renderList();
     newTodo.value = '';
